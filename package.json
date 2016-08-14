@@ -1,0 +1,25 @@
+{
+  "name": "cricd-score-processor",
+  "version": "1.0.0",
+  "description": "An HTTP API that can tell you the sccore of a match",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bradleyscott/cricd-score-processor.git"
+  },
+  "author": "Bradley Scott",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bradleyscott/cricd-score-processor/issues"
+  },
+  "homepage": "https://github.com/bradleyscott/cricd-score-processor#readme",
+  "dependencies": {
+    "debug": "^2.2.0",
+    "express": "^4.14.0",
+    "ges-client": "^0.10.0",
+    "underscore": "^1.8.3"
+  }
+}
