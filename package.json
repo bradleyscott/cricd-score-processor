@@ -4,6 +4,8 @@
   "description": "An HTTP API that can tell you the sccore of a match",
   "main": "index.js",
   "scripts": {
+    "debug": "DEBUG=* node-debug index.js",
+    "start": "DEBUG=* node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
