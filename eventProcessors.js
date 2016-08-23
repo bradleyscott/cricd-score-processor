@@ -8,8 +8,8 @@ exports.delivery = function(e) {
 
     increment.innings = e.ball.innings;
     increment.battingTeam = e.ball.battingTeam;
-    increment.overs = e.ball.overs;
-    increment.balls = e.ball.ball;
+    increment.over = e.ball.over;
+    increment.ball = e.ball.ball;
     e.runs ? increment.runs = parseInt(e.runs) : increment.runs = 0;
 
     return increment;
@@ -21,8 +21,8 @@ exports.noBall = function(e) {
 
     increment.innings = e.ball.innings;
     increment.battingTeam = e.ball.battingTeam;
-    increment.overs = e.ball.overs;
-    increment.balls = e.ball.ball;
+    increment.over = e.ball.over;
+    increment.ball = e.ball.ball;
     e.runs ? increment.runs = parseInt(e.runs) + 1 : increment.runs = 1;
 
     return increment;
@@ -34,8 +34,8 @@ exports.wide = function(e) {
 
     increment.innings = e.ball.innings;
     increment.battingTeam = e.ball.battingTeam;
-    increment.overs = e.ball.overs;
-    increment.balls = e.ball.ball;
+    increment.over = e.ball.over;
+    increment.ball = e.ball.ball;
     e.runs ? increment.runs = parseInt(e.runs) + 1 : increment.runs = 1;
 
     return increment;
@@ -46,8 +46,8 @@ exports.bye = function(e) {
     var increment = {};
     increment.innings = e.ball.innings;
     increment.battingTeam = e.ball.battingTeam;
-    increment.overs = e.ball.overs;
-    increment.balls = e.ball.ball;
+    increment.over = e.ball.over;
+    increment.ball = e.ball.ball;
     e.runs ? increment.runs = parseInt(e.runs) : increment.runs = 0;
 
     return increment;
@@ -58,8 +58,8 @@ exports.legBye = function(e) {
     var increment = {};
     increment.innings = e.ball.innings;
     increment.battingTeam = e.ball.battingTeam;
-    increment.overs = e.ball.overs;
-    increment.balls = e.ball.ball;
+    increment.over = e.ball.over;
+    increment.ball = e.ball.ball;
     e.runs ? increment.runs = parseInt(e.runs) : increment.runs = 0;
     increment.event = e;
 
@@ -71,8 +71,8 @@ exports.bowled = function(e) {
     var increment = {};
     increment.innings = e.ball.innings;
     increment.battingTeam = e.ball.battingTeam;
-    increment.overs = e.ball.overs;
-    increment.balls = e.ball.ball;
+    increment.over = e.ball.over;
+    increment.ball = e.ball.ball;
     increment.runs = 0;
     increment.wickets = 1;
 
@@ -84,8 +84,8 @@ exports.timedOut = function(e) {
     var increment = {};
     increment.innings = e.ball.innings;
     increment.battingTeam = e.ball.battingTeam;
-    increment.overs = e.ball.overs;
-    increment.balls = e.ball.ball;
+    increment.over = e.ball.over;
+    increment.ball = e.ball.ball;
     increment.runs = 0;
     increment.wickets = 1;
 
@@ -97,8 +97,8 @@ exports.caught = function(e) {
     var increment = {};
     increment.innings = e.ball.innings;
     increment.battingTeam = e.ball.battingTeam;
-    increment.overs = e.ball.overs;
-    increment.balls = e.ball.ball;
+    increment.over = e.ball.over;
+    increment.ball = e.ball.ball;
     increment.runs = 0;
     increment.wickets = 1;
 
@@ -111,8 +111,8 @@ exports.handledBall = function(e) {
     var increment = {};
     increment.innings = e.ball.innings;
     increment.battingTeam = e.ball.battingTeam;
-    increment.overs = e.ball.overs;
-    increment.balls = e.ball.ball;
+    increment.over = e.ball.over;
+    increment.ball = e.ball.ball;
     increment.wickets = 1;
     increment.runs = parseInt(e.runs);
 
@@ -124,8 +124,8 @@ exports.doubleHit = function(e) {
     var increment = {};
     increment.innings = e.ball.innings;
     increment.battingTeam = e.ball.battingTeam;
-    increment.overs = e.ball.overs;
-    increment.balls = e.ball.ball;
+    increment.over = e.ball.over;
+    increment.ball = e.ball.ball;
     increment.runs = 0;
     increment.wickets = 1;
 
@@ -138,8 +138,8 @@ exports.hitWicket = function(e) {
     var increment = {};
     increment.innings = e.ball.innings;
     increment.battingTeam = e.ball.battingTeam;
-    increment.overs = e.ball.overs;
-    increment.balls = e.ball.ball;
+    increment.over = e.ball.over;
+    increment.ball = e.ball.ball;
     increment.runs = 0;
     increment.wickets = 1;
 
@@ -151,8 +151,8 @@ exports.lbw = function(e) {
     var increment = {};
     increment.innings = e.ball.innings;
     increment.battingTeam = e.ball.battingTeam;
-    increment.overs = e.ball.overs;
-    increment.balls = e.ball.ball;
+    increment.over = e.ball.over;
+    increment.ball = e.ball.ball;
     increment.runs = 0;
     increment.wickets = 1;
 
@@ -165,8 +165,8 @@ exports.obstruction = function(e) {
     
     increment.innings = e.ball.innings;
     increment.battingTeam = e.ball.battingTeam;
-    increment.overs = e.ball.overs;
-    increment.balls = e.ball.ball;
+    increment.over = e.ball.over;
+    increment.ball = e.ball.ball;
     increment.runs = parseInt(e.runs);
     increment.wickets = 1;
     return increment;
@@ -177,9 +177,9 @@ exports.runOut = function(e) {
     var increment = {};
     increment.innings = e.ball.innings;
     increment.battingTeam = e.ball.battingTeam;
-    increment.overs = e.ball.overs;
-    increment.balls = e.ball.ball;
-    increment.runs = parseInt(e.runs); // TODO: Run outs can happen on wides and no-balls
+    increment.over = e.ball.over;
+    increment.ball = e.ball.ball;
+    increment.runs = parseInt(e.runs); // TODO: Run outs can happen on wides and no-ball
     increment.wickets = 1;
 
     return increment;
@@ -190,8 +190,8 @@ exports.stumped = function(e) {
     var increment = {};
     increment.innings = e.ball.innings;
     increment.battingTeam = e.ball.battingTeam;
-    increment.overs = e.ball.overs;
-    increment.balls = e.ball.ball;
+    increment.over = e.ball.over;
+    increment.ball = e.ball.ball;
     increment.runs = 0;
     increment.wickets = 1;
 

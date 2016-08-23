@@ -54,6 +54,8 @@ incrementStats = function(stats, increment) {
 
     if(!stats.innings[increment.innings]) {
         stats.innings[increment.innings] = {};
+        stats.innings[increment.innings].over = 0;
+        stats.innings[increment.innings].ball = 0;
         stats.innings[increment.innings].battingTeam = increment.battingTeam;
         stats.innings[increment.innings].wickets = 0;
         stats.innings[increment.innings].runs = 0;
@@ -61,8 +63,11 @@ incrementStats = function(stats, increment) {
 
     var innings = stats.innings[increment.innings];
 
-    if(increment.overs > innings.overs) innings.overs = increment.overs;
-    if(increment.balls > innings.balls && increment.overs == innings.overs) innings.balls = increment.balls;
+    if(increment.over > innings.over) {
+        innings.over = increment.over;
+        innings.ball = increment.ball;
+    }
+    if(increment.ball > innings.ball && increment.over == innings.over) innings.ball = increment.ball;
 
     if(increment.runs) innings.runs += increment.runs;
     if(increment.wickets) innings.wickets += increment.wickets;
