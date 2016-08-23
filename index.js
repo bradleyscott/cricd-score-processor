@@ -9,21 +9,22 @@ app.get('/', function(req, res) {
     debug('Request received with query params %s', JSON.stringify(req.query));
 
     var match = req.query.match;
-    if (!match) {
+    if(!match) {
         var error = 'matchId must be included in request query params';
         debug(error);
         return res.status(400).send(error);
     }
 
     var events = eventStore.getMatchEvents(match, function(error, events) {
-        if (error) {
+        if(error) {
             debug(error);
             return res.status(500).send(error);
         }
 
         if(events.length == 0) {
-          debug('No events for this match');
-          return res.send();
+            var message = 'No events for this match';
+            debug(message);
+            return res.status(404).send(message);
         }
 
         var stats = { innings: {} };
@@ -34,7 +35,7 @@ app.get('/', function(req, res) {
             try {
                 var increment = eventProcessors[e.eventType](e);
                 incrementStats(stats, increment);
-            } catch (error) {
+            } catch(error) {
                 var message = 'Error trying to process events. ' + error;
                 debug(message);
                 return res.status(500).send(message);
@@ -58,7 +59,7 @@ incrementStats = function(stats, increment) {
         stats.innings[increment.innings].runs = 0;
     }
 
-    var innings = stats.innings[increment.innings]; 
+    var innings = stats.innings[increment.innings];
 
     if(increment.overs > innings.overs) innings.overs = increment.overs;
     if(increment.balls > innings.balls && increment.overs == innings.overs) innings.balls = increment.balls;
