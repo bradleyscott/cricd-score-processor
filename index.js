@@ -63,11 +63,11 @@ incrementStats = function(stats, increment) {
 
     var innings = stats.innings[increment.innings];
 
-    if(increment.over > innings.over) {
+    if(increment.over > innings.over) { // New over has begun
         innings.over = increment.over;
-        innings.ball = increment.ball;
+        innings.ball = 0;
     }
-    if(increment.ball > innings.ball && increment.over == innings.over) innings.ball = increment.ball;
+    innings.ball += increment.ball; // Increment ball on legal delivery
 
     if(increment.runs) innings.runs += increment.runs;
     if(increment.wickets) innings.wickets += increment.wickets;
