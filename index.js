@@ -34,7 +34,7 @@ app.get('/', function(req, res) {
 
             try {
                 var increment = eventProcessors[e.eventType](e);
-                incrementStats(stats, increment);
+                eventProcessors.incrementStats(stats, increment);
             } catch(error) {
                 var message = 'Error trying to process events. ' + error;
                 debug(message);
@@ -48,27 +48,3 @@ app.get('/', function(req, res) {
 
 app.listen(3002);
 console.log('score-processor listening on port 3002...');
-
-incrementStats = function(stats, increment) {
-    debug('Incrementing stats using: %s', JSON.stringify(increment));
-
-    if(!stats.innings[increment.innings]) {
-        stats.innings[increment.innings] = {};
-        stats.innings[increment.innings].over = 0;
-        stats.innings[increment.innings].ball = 0;
-        stats.innings[increment.innings].battingTeam = increment.battingTeam;
-        stats.innings[increment.innings].wickets = 0;
-        stats.innings[increment.innings].runs = 0;
-    }
-
-    var innings = stats.innings[increment.innings];
-
-    if(increment.over > innings.over) { // New over has begun
-        innings.over = increment.over;
-        innings.ball = 0;
-    }
-    innings.ball += increment.ball; // Increment ball on legal delivery
-
-    if(increment.runs) innings.runs += increment.runs;
-    if(increment.wickets) innings.wickets += increment.wickets;
-};

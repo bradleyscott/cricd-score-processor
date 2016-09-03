@@ -2,6 +2,35 @@ var debug = require('debug')('score-processor-eventProcessors');
 var _ = require('underscore');
 var exports = module.exports = {};
 
+exports.incrementStats = function(stats, increment) {
+    debug('Incrementing stats using: %s', JSON.stringify(increment));
+
+    if(!stats.innings[increment.innings]) {
+        stats.innings[increment.innings] = {};
+        stats.innings[increment.innings].over = 0;
+        stats.innings[increment.innings].ball = 0;
+        stats.innings[increment.innings].battingTeam = increment.battingTeam;
+        stats.innings[increment.innings].wickets = 0;
+        stats.innings[increment.innings].runs = 0;
+    }
+
+    var innings = stats.innings[increment.innings];
+
+    if(increment.over > innings.over) { // New over has begun
+        innings.over = increment.over;
+        innings.ball = 0;
+    }
+    innings.ball += increment.ball; // Increment ball on legal delivery
+
+    if(innings.ball == 6) { // At end of over make the ball count 0
+        innings.over += 1;
+        innings.ball = 0;
+    }
+
+    if(increment.runs) innings.runs += increment.runs;
+    if(increment.wickets) innings.wickets += increment.wickets;
+};
+
 exports.delivery = function(e) {
     debug('Processing delivery: %s', JSON.stringify(e));
     var increment = {};
@@ -114,7 +143,7 @@ exports.handledBall = function(e) {
     increment.over = e.ball.over;
     increment.ball = 1;
     increment.wickets = 1;
-    increment.runs = parseInt(e.runs);
+    increment.runs = 0;
 
     return increment;
 };
