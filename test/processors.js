@@ -22,7 +22,7 @@ describe('A dot ball', function() {
     });
 
     it('should not increment the wickets count', function() {
-        increment.should.not.have.property('wickets');
+        if(increment.wickets) increment.wickets.should.equal(0);
     });
 
     it('should be counted as a legal delivery', function() {
