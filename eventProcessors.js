@@ -2,6 +2,56 @@ var debug = require('debug')('score-processor-eventProcessors');
 var _ = require('underscore');
 var exports = module.exports = {};
 
+exports.calculateResult = function(score, matchInfo) {
+    debug('Calculating match result...');
+
+    var teamOneRuns = 0, teamTwoRuns = 0;
+    if(score.innings[1]) teamOneRuns += score.innings[1].runs;
+    if(score.innings[3]) teamOneRuns += score.innings[3].runs;
+    if(score.innings[2]) teamTwoRuns += score.innings[2].runs;
+    if(score.innings[4]) teamTwoRuns += score.innings[4].runs;
+
+    var result = {};
+    var teamTwoLeads = teamTwoRuns > teamOneRuns;
+    var complete = isMatchComplete(score, matchInfo, teamTwoLeads);
+    var difference = Math.abs(teamOneRuns - teamTwoRuns);
+
+    if(teamOneRuns > teamTwoRuns) {
+        result.team = score.innings[1].battingTeam;
+        if(complete) result.result = 'won by ' + difference + ' runs';
+        else result.result = 'leads by ' + difference + ' runs';
+    }
+    else if(difference == 0 && complete) result.result = 'Match was drawn';
+    else if(difference == 0 && !complete) result.result = 'Scores are tied';
+    else {
+        result.team = score.innings[2].battingTeam;
+        var wicketsLeft = 10 - score.innings[matchInfo.numberOfInnings * 2].wickets; 
+        
+        if(complete) result.result = 'won by ' + wicketsLeft + ' wickets';
+        else result.result = 'leads by ' + difference + ' runs';
+    } 
+
+    score.result = result;
+};
+
+exports.isMatchComplete = function(score, matchInfo, teamTwoLeads) {
+    if(!score.innings[2]) return false;
+    else if(matchInfo.numberOfInnings == 2 && !score.innings[4]) return false;
+    else if(matchInfo.numberOfInnings == 1 && isInningsComplete(score.innings[2])) return true;
+    else if(matchInfo.numberOfInnings == 2 && isInningsComplete(score.innings[4])) return true;
+    else if(matchInfo.numberOfInnings == 1 && teamTwoLeads) return true;
+    else if(matchInfo.numberOfInnings == 2 && score.innings[4] && teamTwoLeads) return true;
+    else return false;
+};
+var isMatchComplete = exports.isMatchComplete;
+
+exports.isInningsComplete = function(innings, limitedOvers) {
+    if(innings.wickets == 10) return true;
+    else if(innings.over >= limitedOvers) return true;
+    else return false;
+};
+var isInningsComplete = exports.isInningsComplete;
+
 exports.incrementStats = function(stats, increment) {
     debug('Incrementing stats using: %s', JSON.stringify(increment));
 
