@@ -51,6 +51,7 @@ app.get('/', function(req, res) {
         });
 
         eventProcessors.calculateResult(stats, matchInfo);
+        stats.matchInfo = matchInfo;
         return res.send(stats);
     }).catch(function(error){
         debug(error);
