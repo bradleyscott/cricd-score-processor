@@ -8,7 +8,7 @@ var eventProcessors = require('./eventProcessors.js');
 var _ = require('underscore');
 
 app.use(function(req, res, next) {
-    var allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS : '*localhost*';
+    var allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS : 'http://localhost:8080';
     res.header("Access-Control-Allow-Origin", allowedOrigins);
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
