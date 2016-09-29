@@ -8,9 +8,10 @@ var eventProcessors = require('./eventProcessors.js');
 var _ = require('underscore');
 
 app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
+    var allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS : 'http://localhost:8080';
+    res.header("Access-Control-Allow-Origin", allowedOrigins);
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
 });
 
 app.get('/', function(req, res) {
@@ -24,10 +25,10 @@ app.get('/', function(req, res) {
     }
 
     var matchInfo = {};
-    entities.getMatchInfoAsync(match).then(function(info){
+    entities.getMatchInfoAsync(match).then(function(info) {
         matchInfo = info;
         return eventStore.getMatchEventsAsync(match);
-    }).then(function(events){
+    }).then(function(events) {
         if(events.length == 0) {
             var message = 'No events for this match';
             debug(message);
@@ -53,7 +54,7 @@ app.get('/', function(req, res) {
         eventProcessors.calculateResult(stats, matchInfo);
         stats.matchInfo = matchInfo;
         return res.send(stats);
-    }).catch(function(error){
+    }).catch(function(error) {
         debug(error);
         return res.status(500).send(error);
     });
