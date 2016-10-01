@@ -19,7 +19,7 @@ exports.calculateResult = function(score, matchInfo) {
 
     // Identify the teams batting first and second
     var battingFirstRuns, battingSecondRuns;
-    if(score.innings[1].battingTeam.id == homeTeamId) {
+    if(score.innings[0].battingTeam.id == homeTeamId) {
         battingFirstRuns = homeTeamRuns;
         battingSecondRuns = awayTeamRuns;
     } else {
@@ -34,15 +34,15 @@ exports.calculateResult = function(score, matchInfo) {
     var difference = Math.abs(battingFirstRuns - battingSecondRuns);
 
     if(battingFirstRuns > battingSecondRuns) { // Team batting first wins
-        result.team = score.innings[1].battingTeam;
+        result.team = score.innings[0].battingTeam;
         if(isComplete) result.result = 'won by ' + difference + ' runs';
         else result.result = 'leads by ' + difference + ' runs';
     }
     else if(difference == 0 && isComplete) result.result = 'Match was drawn';
     else if(difference == 0 && !isComplete) result.result = 'Scores are tied';
     else { // Team batting second wins
-        result.team = score.innings[2].battingTeam;
-        var wicketsLeft = 10 - score.innings[matchInfo.numberOfInnings * 2].wickets; 
+        result.team = score.innings[1].battingTeam;
+        var wicketsLeft = 10 - score.innings[matchInfo.numberOfInnings * 2 - 1].wickets; 
         
         if(isComplete) result.result = 'won by ' + wicketsLeft + ' wickets';
         else result.result = 'leads by ' + difference + ' runs';
