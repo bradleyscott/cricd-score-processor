@@ -10,13 +10,11 @@ exports.calculateResult = function(score, matchInfo) {
     var awayTeamId = matchInfo.awayTeam.id;
 
     // Calculate the runs scored by each team
-    var i = 1, homeTeamRuns = 0, awayTeamRuns = 0;
-    while(score.innings[i]) {
+    var homeTeamRuns = 0, awayTeamRuns = 0;
+    for(var i = 0; i < score.innings.length; i++) {
         if(score.innings[i].battingTeam.id == homeTeamId)
             homeTeamRuns += score.innings[i].runs;
         else awayTeamRuns += score.innings[i].runs;
-
-        i++;
     }
 
     // Identify the teams batting first and second
@@ -54,14 +52,14 @@ exports.calculateResult = function(score, matchInfo) {
 };
 
 exports.isMatchComplete = function(score, matchInfo, isTeamBattingSecondAhead) {
-    var isFollowOn = matchInfo.numberOfInnings == 2 && (score.innings[2] && score.innings[3]) && (score.innings[2].battingTeam.id == score.innings[3].battingTeam.id);
+    var isFollowOn = matchInfo.numberOfInnings == 2 && (score.innings[1] && score.innings[2]) && (score.innings[1].battingTeam.id == score.innings[2].battingTeam.id);
 
-    if(!score.innings[2]) return false; // No match can be complete without the 2nd team batting
-    else if(matchInfo.numberOfInnings == 1 && isInningsComplete(score.innings[2])) return true; // 2 innings complete when 1 innings each
-    else if(matchInfo.numberOfInnings == 2 && isInningsComplete(score.innings[4])) return true; // 4 innings complete when 2 innings each
+    if(!score.innings[1]) return false; // No match can be complete without the 2nd team batting
+    else if(matchInfo.numberOfInnings == 1 && isInningsComplete(score.innings[1])) return true; // 2 innings complete when 1 innings each
+    else if(matchInfo.numberOfInnings == 2 && isInningsComplete(score.innings[3])) return true; // 4 innings complete when 2 innings each
     else if(matchInfo.numberOfInnings == 1 && isTeamBattingSecondAhead) return true; // Team batting second is ahead in 1 innings match
-    else if(matchInfo.numberOfInnings == 2 && score.innings[4] && isTeamBattingSecondAhead) return true;  // Team batting second is ahead in 4th innings
-    else if(isFollowOn && isInningsComplete[3] && !isTeamBattingSecondAhead) return true; // Follow on enforced and 2nd team dismissed without lead
+    else if(matchInfo.numberOfInnings == 2 && score.innings[3] && isTeamBattingSecondAhead) return true;  // Team batting second is ahead in 4th innings
+    else if(isFollowOn && isInningsComplete[2] && !isTeamBattingSecondAhead) return true; // Follow on enforced and 2nd team dismissed without lead
     else return false;
 };
 var isMatchComplete = exports.isMatchComplete;
@@ -76,16 +74,17 @@ var isInningsComplete = exports.isInningsComplete;
 exports.incrementStats = function(stats, increment) {
     debug('Incrementing stats using: %s', JSON.stringify(increment));
 
-    if(!stats.innings[increment.innings]) {
-        stats.innings[increment.innings] = {};
-        stats.innings[increment.innings].over = 0;
-        stats.innings[increment.innings].ball = 0;
-        stats.innings[increment.innings].battingTeam = increment.battingTeam;
-        stats.innings[increment.innings].wickets = 0;
-        stats.innings[increment.innings].runs = 0;
+    var inningsNumber = increment.innings - 1;
+    if(!stats.innings[inningsNumber]) {
+        stats.innings[inningsNumber] = {};
+        stats.innings[inningsNumber].over = 0;
+        stats.innings[inningsNumber].ball = 0;
+        stats.innings[inningsNumber].battingTeam = increment.battingTeam;
+        stats.innings[inningsNumber].wickets = 0;
+        stats.innings[inningsNumber].runs = 0;
     }
 
-    var innings = stats.innings[increment.innings];
+    var innings = stats.innings[inningsNumber];
 
     if(increment.over > innings.over) { // New over has begun
         innings.over = increment.over;

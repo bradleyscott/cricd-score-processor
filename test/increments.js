@@ -20,7 +20,7 @@ describe('The batting teams score', function(){
         };
 
         processor.incrementStats(stats, increment);
-        stats.innings[1].runs.should.equal(1);
+        stats.innings[0].runs.should.equal(1);
     });
  
     it('should not increment when no runs are scored', function(){
@@ -34,16 +34,16 @@ describe('The batting teams score', function(){
         };
 
         processor.incrementStats(stats, increment);
-        stats.innings[1].runs.should.equal(0);
+        stats.innings[0].runs.should.equal(0);
     });
 });
 
 describe('The over and ball count', function(){
     it('should increment by 1 ball during an over', function(){
         var stats = getStats();
-        stats.innings[1] = {};
-        stats.innings[1].over = 2;
-        stats.innings[1].ball = 3;
+        stats.innings[0] = {};
+        stats.innings[0].over = 2;
+        stats.innings[0].ball = 3;
 
         var increment = {
             innings: 1,
@@ -54,15 +54,15 @@ describe('The over and ball count', function(){
         };
 
         processor.incrementStats(stats, increment);
-        stats.innings[1].over.should.equal(2);
-        stats.innings[1].ball.should.equal(4);     
+        stats.innings[0].over.should.equal(2);
+        stats.innings[0].ball.should.equal(4);     
     });
 
     it('should increment the over after 6 deliveries', function(){
         var stats = getStats();
-        stats.innings[1] = {};
-        stats.innings[1].over = 5;
-        stats.innings[1].ball = 5;
+        stats.innings[0] = {};
+        stats.innings[0].over = 5;
+        stats.innings[0].ball = 5;
 
         var increment = {
             innings: 1,
@@ -73,15 +73,15 @@ describe('The over and ball count', function(){
         };
 
         processor.incrementStats(stats, increment);
-        stats.innings[1].over.should.equal(6);
-        stats.innings[1].ball.should.equal(0);     
+        stats.innings[0].over.should.equal(6);
+        stats.innings[0].ball.should.equal(0);     
     });
 
     it('should not increment on an extra', function(){
         var stats = getStats();
-        stats.innings[1] = {};
-        stats.innings[1].over = 2;
-        stats.innings[1].ball = 3;
+        stats.innings[0] = {};
+        stats.innings[0].over = 2;
+        stats.innings[0].ball = 3;
 
         var increment = {
             innings: 1,
@@ -92,8 +92,8 @@ describe('The over and ball count', function(){
         };
 
         processor.incrementStats(stats, increment);
-        stats.innings[1].over.should.equal(2);
-        stats.innings[1].ball.should.equal(3);     
+        stats.innings[0].over.should.equal(2);
+        stats.innings[0].ball.should.equal(3);     
     });
 });
 
@@ -109,7 +109,7 @@ describe('The wicket count', function(){
         };
 
         processor.incrementStats(stats, increment);
-        stats.innings[1].wickets.should.equal(0);
+        stats.innings[0].wickets.should.equal(0);
     });
 
     it('should increment when there is a wicket', function(){ 
@@ -124,6 +124,6 @@ describe('The wicket count', function(){
         };
 
         processor.incrementStats(stats, increment);
-        stats.innings[1].wickets.should.equal(1);
+        stats.innings[0].wickets.should.equal(1);
     });
 });

@@ -35,7 +35,7 @@ app.get('/', function(req, res) {
             return res.status(404).send(message);
         }
 
-        var stats = { innings: {}, matchEvents: [] };
+        var stats = { innings: [], matchEvents: [] };
 
         _(events).each(function(e) {
             debug('Invoking processor for: %s', e.eventType);
