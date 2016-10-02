@@ -3,6 +3,7 @@ var app = express();
 var debug = require('debug')('score-processor');
 var Promise = require('bluebird');
 var cors = require('cors');
+var async = require('async');
 var eventStore = Promise.promisifyAll(require('./eventstore.js'));
 var entities = Promise.promisifyAll(require('./entities.js'));
 var eventProcessors = require('./eventProcessors.js');
@@ -25,12 +26,8 @@ app.get('/', cors(corsOptions), function(req, res) {
         return res.status(400).send(error);
     }
 
-    var matchInfo = {}; 
     var stats = { innings: [], matchEvents: [] };
-    entities.getMatchInfoAsync(match).then(function(info) {
-        matchInfo = info;
-        return eventStore.getMatchEventsAsync(match);
-    }).then(function(events) {
+    eventStore.getMatchEventsAsync(match).then(function(events) {
         if(events.length == 0) {
             var message = 'No events for this match';
             debug(message);
@@ -51,19 +48,24 @@ app.get('/', cors(corsOptions), function(req, res) {
             }
         });
 
-        resultCalculator.calculateResult(stats, matchInfo);
-        stats.matchInfo = matchInfo;
+        return entities.getMatchInfoAsync(match);
+    }).then(function(info) {
+        resultCalculator.calculateResult(stats, info);
+        stats.matchInfo = info;
 
-        return battingAndBowling.addBattingStatsAsync(stats, match);
-    })
-        .then(function() {
-            return battingAndBowling.addBowlingStatsAsync(stats, match);
-        })
-        .then(function() { return res.send(stats); })
-        .catch(function(error) {
-            debug(error);
-            return res.status(500).send(error);
-        });
+        async.parallel([
+            function(callback) { battingAndBowling.addBowlingStats(stats, match, callback); },
+            function(callback) { battingAndBowling.addBattingStats(stats, match, callback); }
+        ],
+            function(err) { 
+                debug(err);
+                if(err) res.status(500).send(err);
+                return res.send(stats); 
+            });
+    }).catch(function(error) {
+        debug(error);
+        return res.status(500).send(error);
+    });
 });
 
 app.listen(3002);
