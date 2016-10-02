@@ -1,20 +1,21 @@
 var express = require('express');
 var app = express();
-var debug = require('debug')('bowler-match');
+var debug = require('debug')('score-processor');
 var Promise = require('bluebird');
+var cors = require('cors');
 var eventStore = Promise.promisifyAll(require('./eventstore.js'));
 var entities = Promise.promisifyAll(require('./entities.js'));
 var eventProcessors = require('./eventProcessors.js');
+var resultCalculator = require('./resultCalculator.js');
+var battingAndBowling = Promise.promisifyAll(require('./battingAndBowling.js'));
 var _ = require('underscore');
 
-app.use(function(req, res, next) {
-    var allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS : 'http://localhost:8080';
-    res.header("Access-Control-Allow-Origin", allowedOrigins);
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
-});
+var allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS : 'http://localhost:8080';
+var corsOptions = {
+    origin: allowedOrigins
+};
 
-app.get('/', function(req, res) {
+app.get('/', cors(corsOptions), function(req, res) {
     debug('Request received with query params %s', JSON.stringify(req.query));
 
     var match = req.query.match;
@@ -24,7 +25,8 @@ app.get('/', function(req, res) {
         return res.status(400).send(error);
     }
 
-    var matchInfo = {};
+    var matchInfo = {}; 
+    var stats = { innings: [], matchEvents: [] };
     entities.getMatchInfoAsync(match).then(function(info) {
         matchInfo = info;
         return eventStore.getMatchEventsAsync(match);
@@ -32,10 +34,8 @@ app.get('/', function(req, res) {
         if(events.length == 0) {
             var message = 'No events for this match';
             debug(message);
-            return res.status(404).send(message);
+            return res.send();
         }
-
-        var stats = { innings: [], matchEvents: [] };
 
         _(events).each(function(e) {
             debug('Invoking processor for: %s', e.eventType);
@@ -51,13 +51,16 @@ app.get('/', function(req, res) {
             }
         });
 
-        eventProcessors.calculateResult(stats, matchInfo);
+        resultCalculator.calculateResult(stats, matchInfo);
         stats.matchInfo = matchInfo;
-        return res.send(stats);
-    }).catch(function(error) {
-        debug(error);
-        return res.status(500).send(error);
-    });
+
+        return battingAndBowling.addBattingStatsAsync(stats, match);
+    })
+        .then(function() { return res.send(stats); })
+        .catch(function(error) {
+            debug(error);
+            return res.status(500).send(error);
+        });
 });
 
 app.listen(3002);

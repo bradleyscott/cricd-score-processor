@@ -1,4 +1,4 @@
-var debug = require('debug')('score-processor-entities');
+var debug = require('debug')('score-processor:entities');
 var exports = module.exports = {};
 var Client = require('node-rest-client').Client;
 var client = new Client();

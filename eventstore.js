@@ -1,4 +1,4 @@
-var debug = require('debug')('score-processor-eventstore');
+var debug = require('debug')('score-processor:eventstore');
 var client = require('ges-client');
 var _ = require('underscore');
 var exports = module.exports = {};

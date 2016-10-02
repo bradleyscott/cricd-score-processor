@@ -19,7 +19,9 @@
   },
   "homepage": "https://github.com/cricd/score-processor#readme",
   "dependencies": {
+    "async": "^2.0.1",
     "bluebird": "^3.4.6",
+    "cors": "^2.8.1",
     "debug": "^2.2.0",
     "express": "^4.14.0",
     "ges-client": "^0.10.0",
