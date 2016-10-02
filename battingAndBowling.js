@@ -6,8 +6,10 @@ var client = new Client();
 var async = require('async');
 
 // Configuration variables
-var host = process.env.BATTINGPROCESSOR_HOST ? process.env.BATTINGPROCESSOR_HOST : 'batting-processor';
-var port = process.env.BATTINGPROCESSOR_PORT ? process.env.BATTINGPROCESSOR_PORT : 3000;
+var battingHost = process.env.BATTINGPROCESSOR_HOST ? process.env.BATTINGPROCESSOR_HOST : 'batting-processor';
+var battingPort = process.env.BATTINGPROCESSOR_PORT ? process.env.BATTINGPROCESSOR_PORT : 3000;
+var bowlingHost = process.env.BOWLINGPROCESSOR_HOST ? process.env.BOWLINGPROCESSOR_HOST : 'bowling-processor';
+var bowlingPort = process.env.BOWLINGPROCESSOR_PORT ? process.env.BOWLINGPROCESSOR_PORT : 3001;
 
 exports.addBattingStats = function(stats, matchId, callback) {
     debug('Attempting to add batting stats');
@@ -38,9 +40,9 @@ exports.getBattingStats = function(matchId, inningsId, callback) {
         return callback(error);
     }
 
-    var baseUrl = 'http://' + host + ':' + port;
+    var baseUrl = 'http://' + battingHost + ':' + battingPort;
     client.get(baseUrl + '?match=' + matchId + '&innings=' + inningsId, function(info, response) {
-        debug('Received match info: %s', JSON.stringify(info));
+        debug('Received batting stats: %s', JSON.stringify(info));
         callback(null, info);
     }).on('error', function(err) {
         var message = 'Problem retrieving batting info: ' + err;
@@ -49,3 +51,45 @@ exports.getBattingStats = function(matchId, inningsId, callback) {
     });
 };
 var getBattingStats = exports.getBattingStats;
+
+
+exports.addBowlingStats = function(stats, matchId, callback) {
+    debug('Attempting to add bowling stats');
+
+    async.forEachOf(stats.innings, function(i, key, cb) {
+        getBowlingStats(matchId, key + 1, function(err, bowling) {
+            if(err) cb(err);
+            stats.innings[key].bowling = bowling;
+            cb();
+        });
+    }, function(err) {
+        if(err) {
+            debug(err);
+            return callback(err);
+        }
+
+        debug('Successfully adding bowling stats');
+        callback();
+    });
+}
+
+exports.getBowlingStats = function(matchId, inningsId, callback) {
+    debug('Attempting to retrieve bowling stats');
+
+    if(!matchId || !inningsId) {
+        var error = 'matchId and inningsId is required to get info';
+        debug(error);
+        return callback(error);
+    }
+
+    var baseUrl = 'http://' + bowlingHost + ':' + bowlingPort;
+    client.get(baseUrl + '?match=' + matchId + '&innings=' + inningsId, function(info, response) {
+        debug('Received bowling stats: %s', JSON.stringify(info));
+        callback(null, info);
+    }).on('error', function(err) {
+        var message = 'Problem retrieving bowling info: ' + err;
+        debug(message);
+        return callback(message);
+    });
+};
+var getBowlingStats = exports.getBowlingStats;

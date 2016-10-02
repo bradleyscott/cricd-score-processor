@@ -56,6 +56,9 @@ app.get('/', cors(corsOptions), function(req, res) {
 
         return battingAndBowling.addBattingStatsAsync(stats, match);
     })
+        .then(function() {
+            return battingAndBowling.addBowlingStatsAsync(stats, match);
+        })
         .then(function() { return res.send(stats); })
         .catch(function(error) {
             debug(error);
