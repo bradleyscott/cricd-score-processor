@@ -31,7 +31,7 @@ app.get('/', cors(corsOptions), function(req, res) {
         if(events.length == 0) {
             var message = 'No events for this match';
             debug(message);
-            return res.send();
+            return res.status(404).send(message);
         }
 
         _(events).each(function(e) {
