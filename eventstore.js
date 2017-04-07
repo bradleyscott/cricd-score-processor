@@ -40,7 +40,7 @@ exports.getMatchEvents = function(matchId, callback) {
         }, function(err, readResult) {
             if(err) {
                 var error = 'Problem reading from EventStore stream: ' + stream + '. ' + err;
-                callback(error);
+                connection.close(function(){ callback(error); });
             }
 
             debug('Retrieved %s match events', readResult.Events.length);
@@ -48,7 +48,7 @@ exports.getMatchEvents = function(matchId, callback) {
                 var json = e.Event.Data.toString();
                 return JSON.parse(json);
             });
-            callback(null, events);
+            connection.close(function() { callback(null, events); });
         });
     });
 };
