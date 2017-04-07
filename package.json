@@ -4,9 +4,9 @@
   "description": "An HTTP API that can tell you the sccore of a match",
   "main": "index.js",
   "scripts": {
-    "debug": " DEBUG=* EVENTSTORE_HOST=localhost ENTITIES_HOST=localhost BATTINGPROCESSOR_HOST=localhost BOWLINGPROCESSOR_HOST=localhost node --inspect index.js",
-    "debug-windows": "SET EVENTSTORE_HOST=localhost&& SET ENTITIES_HOST=localhost&& SET BATTINGPROCESSOR_HOST=localhost&& SET BOWLINGPROCESSOR_HOST=localhost&& node --inspect index.js",
-    "start": "DEBUG=* node index.js",
+    "debug": "DEBUG=* EVENTSTORE_HOST=localhost ENTITIES_HOST=localhost BATTINGPROCESSOR_HOST=localhost BOWLINGPROCESSOR_HOST=localhost node --inspect index.js",
+    "debug-windows": "SET EVENTSTORE_HOST=localhost&& SET ENTITIES_HOST=localhost&& SET BATTINGPROCESSOR_HOST=localhost&& SET BOWLINGPROCESSOR_HOST=localhost&& SET DEBUG=*&& node --inspect index.js",
+    "start": "node index.js",
     "test": "mocha --reporter=spec"
   },
   "repository": {
