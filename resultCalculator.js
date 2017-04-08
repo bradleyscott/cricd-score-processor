@@ -33,34 +33,29 @@ exports.calculateResult = function (score, matchInfo) {
     var isComplete = isMatchComplete(score, matchInfo, isTeamBattingSecondAhead);
     var difference = Math.abs(battingFirstRuns - battingSecondRuns);
 
-    if (battingFirstRuns > battingSecondRuns) { // Team batting first wins
+    if (!isTeamBattingSecondAhead) { // Team batting first is ahead
         result.team = score.innings[0].battingTeam;
-        if (isComplete) result.result = 'won by ' + difference + ' runs';
+        result.runs = difference;
+        result.isComplete = isComplete
+        if (isComplete) result.text = result.team.name + ' won by ' + difference + ' runs';
         else {
-            result.required = {
-                runs: difference,
-                runRate: calculateRunRateRequired(difference, matchInfo, score)
-            }
-            result.result = 'leads by ' + difference + ' runs.';
-            
-            var chasingTeam = score.innings[score.innings.length - 1].battingTeam.name;
-            if(result.required.runRate) result.result += ' ' + chasingTeam + ' need to score at ' + result.required.runRate.toPrecision(3) + ' runs per over.';
-        }
+            result.text = result.team.name + ' leads by ' + difference + ' runs.';
+            var chasingTeam = score.innings[score.innings.length - 1].battingTeam;
+            if(matchInfo.limitedOvers) {
+                result.text += ' ' + chasingTeam.name + ' need to score at ' + result.runRate.toPrecision(3) + ' runs per over.';
+                result.runRate = calculateRunRateRequired(difference, matchInfo, score);
+            } 
+        } 
     }
-    else if (difference == 0 && isComplete) result.result = 'Match was drawn';
-    else if (difference == 0 && !isComplete) result.result = 'Scores are tied';
-    else { // Team batting second wins
+    else if (difference == 0 && isComplete) result.text = 'Match was drawn';
+    else if (difference == 0 && !isComplete) result.text = 'Scores are tied';
+    else { // Team batting second is ahead
         result.team = score.innings[1].battingTeam;
-        var wicketsLeft = 10 - score.innings[matchInfo.numberOfInnings * 2 - 1].wickets;
-
-        if (isComplete) result.result = 'won by ' + wicketsLeft + ' wickets';
-        else {
-            result.result = 'leads by ' + difference + ' runs';
-            result.required = {
-                runs: difference,
-                runRate: calculateRunRateRequired(difference, matchInfo, score)
-            }
-        }
+        result.runs = difference;
+        result.isComplete = isComplete;
+        result.wickets = 10 - score.innings[matchInfo.numberOfInnings * 2 - 1].wickets;
+        if (isComplete) result.text = result.team.name + ' won by ' + result.wickets + ' wickets';
+        else result.text = 'leads by ' + difference + ' runs';
     }
 
     score.result = result;
