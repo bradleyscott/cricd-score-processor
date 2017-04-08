@@ -44,7 +44,7 @@ exports.calculateResult = function (score, matchInfo) {
             result.result = 'leads by ' + difference + ' runs.';
             
             var chasingTeam = score.innings[score.innings.length - 1].battingTeam.name;
-            if(result.required.runRate) result.result += ' ' + chasingTeam + ' need to score at ' + result.required.runRate + ' runs per over.';
+            if(result.required.runRate) result.result += ' ' + chasingTeam + ' need to score at ' + result.required.runRate.toPrecision(3) + ' runs per over.';
         }
     }
     else if (difference == 0 && isComplete) result.result = 'Match was drawn';
@@ -69,8 +69,9 @@ exports.calculateResult = function (score, matchInfo) {
 exports.calculateRunRateRequired = function (runsNeeded, matchInfo, score) {
     if (!matchInfo.limitedOvers) return null;
 
-    var ballsSoFar = score.innings[score.innings.length - 1].overs * 6;
-    ballsSoFar += score.innings[score.innings.length - 1].ball;
+    var oversSoFar = score.innings[score.innings.length - 1].over;
+    var ballsInThisOver = score.innings[score.innings.length - 1].ball;
+    var ballsSoFar = oversSoFar * 6 + ballsInThisOver;
 
     var ballsToGo = matchInfo.limitedOvers * 6 - ballsSoFar;
     var runsPerBall = runsNeeded / ballsToGo;
@@ -82,8 +83,8 @@ exports.isMatchComplete = function (score, matchInfo, isTeamBattingSecondAhead) 
     var isFollowOn = matchInfo.numberOfInnings == 2 && (score.innings[1] && score.innings[2]) && (score.innings[1].battingTeam.id == score.innings[2].battingTeam.id);
 
     if (!score.innings[1]) return false; // No match can be complete without the 2nd team batting
-    else if (matchInfo.numberOfInnings == 1 && isInningsComplete(score.innings[1])) return true; // 2 innings complete when 1 innings each
-    else if (matchInfo.numberOfInnings == 2 && isInningsComplete(score.innings[3])) return true; // 4 innings complete when 2 innings each
+    else if (matchInfo.numberOfInnings == 1 && isInningsComplete(score.innings[1], matchInfo.limitedOvers)) return true; // 2 innings complete when 1 innings each
+    else if (matchInfo.numberOfInnings == 2 && isInningsComplete(score.innings[3], matchInfo.limitedOvers)) return true; // 4 innings complete when 2 innings each
     else if (matchInfo.numberOfInnings == 1 && isTeamBattingSecondAhead) return true; // Team batting second is ahead in 1 innings match
     else if (matchInfo.numberOfInnings == 2 && score.innings[3] && isTeamBattingSecondAhead) return true;  // Team batting second is ahead in 4th innings
     else if (isFollowOn && isInningsComplete[2] && !isTeamBattingSecondAhead) return true; // Follow on enforced and 2nd team dismissed without lead
